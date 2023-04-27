@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
 import Snackbar from '@mui/material/Snackbar';
-import addCar from './AddCar';
+import EditCar from './EditCar';
 import AddCar from './AddCar';
 import { API_URL } from '../constants';
 
@@ -57,6 +57,22 @@ function Carlist() {
         .catch(err => console.error(err))
     }
 
+    const updateCar = (car, link) => {
+        fetch(link, {
+        method : 'PUT',
+        headers: {'Content-type':'application/json'},
+        body: JSON.stringify(car)
+        })
+        .then(response => {
+            if (response.ok)
+                getCars();
+            else
+                alert("Something went wrong")
+        })
+        .catch(err => console.error(err))
+        }
+    
+
     const [columnDefs] = useState([
         {field: 'brand', sortable: true, filter :true},
         {field: 'model', sortable: true, filter :true},
@@ -64,6 +80,9 @@ function Carlist() {
         {field: 'fuel', sortable: true, filter :true, width: 150},
         {field: 'year', sortable: true, filter :true, width: 100},
         {field: 'price', sortable: true, filter :true, width: 150},
+        {filterable: false,
+         sortable: false,
+         cellRenderer: row => <EditCar updateCar={updateCar} car={row.data}/>},
         {cellRenderer: params => 
             <Button size="small" color="error" onClick={() => deleteCar(params)}>
               Delete
